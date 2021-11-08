@@ -1,26 +1,35 @@
-import { PageComponent } from './[...pageUri]';
-import { PostComponent } from './posts/[postSlug]';
-import { client } from 'client';
+import { client, ContentNodeIdTypeEnum } from "client";
+import { useRouter } from "next/router";
+import { PostComponent } from "./posts/[postSlug]";
+import { PageComponent } from "./[...pageUri]";
 
 export default function Preview() {
-  const { usePreview } = client.auth;
-  const result = usePreview();
+  const router = useRouter();
+  const { query } = router;
+  const { p } = query;
 
-  if (client.useIsLoading() || !result) {
-    return <p>loading...</p>;
+  const auth = client.auth.useAuth();
+
+  const node = client.auth.useQuery().contentNode({
+    id: p as string,
+    idType: ContentNodeIdTypeEnum.DATABASE_ID,
+    asPreview: true,
+  });
+
+  if (!p || auth.isAuthenticated === undefined) {
+    return <>Loading</>;
   }
 
-  if (result.type === 'page') {
-    if (!result.page) {
-      return <>Not Found</>;
-    }
+  const postType = node?.__typename;
 
-    return <PageComponent page={result.page} />;
+  switch (postType) {
+    case "Page":
+      return <PageComponent page={node?.$on?.Page} />;
+    case "Post":
+      return <PostComponent post={node?.$on?.Post} />;
+    // case "Event":
+    //     return <EventComponent post={node?.$on?.Event} />;
+    default:
+      return <>Not found</>;
   }
-
-  if (!result.post) {
-    return <>Not Found</>;
-  }
-
-  return <PostComponent post={result.post} />;
 }
