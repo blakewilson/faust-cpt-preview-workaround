@@ -27,6 +27,7 @@ export default function Preview() {
       return <PageComponent page={node?.$on?.Page} />;
     case "Post":
       return <PostComponent post={node?.$on?.Post} />;
+    // Add custom post types here as needed
     // case "Event":
     //     return <EventComponent post={node?.$on?.Event} />;
     default:
