@@ -21,12 +21,14 @@ export default function Preview() {
   }
 
   const postType = node?.__typename;
+  const page = node?.$on?.Page;
+  const post = node?.$on?.Post;
 
   switch (postType) {
     case "Page":
-      return <PageComponent page={node?.$on?.Page} />;
+      return <PageComponent page={page} />;
     case "Post":
-      return <PostComponent post={node?.$on?.Post} />;
+      return <PostComponent post={post} />;
     // Add custom post types here as needed
     // case "Event":
     //     return <EventComponent post={node?.$on?.Event} />;
